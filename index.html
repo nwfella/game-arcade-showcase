@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Game Arcade — Portfolio Showcase</title>
+<style>
+/* ── Reset & Base ── */
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root {
+  --bg: #0a0a12;
+  --surface: #12121e;
+  --card-bg: #1a1a2e;
+  --border: #2a2a3e;
+  --text: #e0e0ea;
+  --text-muted: #8888aa;
+  --glow: rgba(100,120,255,0.08);
+  --star: rgba(255,255,255,0.6);
+
+  /* Per-game accent colours */
+  --c-star-castle: #4fc3f7;
+  --c-hopper: #66bb6a;
+  --c-zaxxon: #00bcd4;
+  --c-project-2084: #f44336;
+  --c-moon-patrol: #4caf50;
+  --c-slopwith: #ff9800;
+  --c-bikini: #ffd700;
+  --c-flappy: #ffeb3b;
+  --c-tower: #cd853f;
+}
+
+html{font-size:16px}
+body{
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Courier New', 'Consolas', monospace;
+  line-height: 1.5;
+  overflow-x: hidden;
+  min-height: 100vh;
+}
+
+/* ── Stars background ── */
+#stars-canvas{
+  position:fixed;top:0;left:0;width:100%;height:100%;
+  z-index:0;pointer-events:none;opacity:.4;
+}
+
+/* ── Scanlines overlay ── */
+body::after{
+  content:'';position:fixed;top:0;left:0;width:100%;height:100%;
+  background:repeating-linear-gradient(
+    0deg, transparent, transparent 2px, rgba(0,0,0,.08) 2px, rgba(0,0,0,.08) 4px
+  );
+  pointer-events:none;z-index:1;
+}
+
+/* ── Header ── */
+.hero{
+  position:relative;z-index:2;
+  text-align:center;padding:60px 20px 30px;
+}
+.hero h1{
+  font-size:clamp(28px,6vw,52px);
+  color:#fff;
+  text-shadow:0 0 30px rgba(100,200,255,.3),0 0 60px rgba(100,200,255,.1);
+  letter-spacing:8px;
+  text-transform:uppercase;
+}
+.hero h1 span{color:var(--c-star-castle);}
+.hero .subtitle{
+  margin-top:8px;
+  font-size:clamp(13px,2vw,16px);
+  color:var(--text-muted);
+  letter-spacing:3px;
+}
+.hero .count{
+  display:inline-block;
+  margin-top:14px;
+  padding:4px 16px;
+  border:1px solid var(--border);
+  border-radius:20px;
+  font-size:13px;
+  color:var(--text-muted);
+  letter-spacing:2px;
+}
+.hero .count span{color:var(--c-slopwith);font-weight:bold;}
+
+/* ── Meta bar ── */
+.meta-bar{
+  position:relative;z-index:2;
+  display:flex;justify-content:center;gap:12px;
+  flex-wrap:wrap;padding:8px 20px 24px;
+}
+.meta-bar .tag{
+  padding:3px 12px;
+  border:1px solid var(--border);
+  border-radius:12px;
+  font-size:11px;
+  color:var(--text-muted);
+  letter-spacing:1px;
+  text-transform:uppercase;
+}
+.meta-bar .tag.active{
+  border-color:rgba(100,200,255,.3);
+  color:var(--c-star-castle);
+  background:rgba(100,200,255,.05);
+}
+
+/* ── Grid ── */
+.grid{
+  position:relative;z-index:2;
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:20px;
+  max-width:1200px;
+  margin:0 auto;
+  padding:0 20px 60px;
+}
+@media(max-width:1100px){.grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:640px){.grid{grid-template-columns:1fr;gap:16px;padding:0 12px 40px}}
+
+/* ── Card ── */
+.card{
+  position:relative;
+  background:var(--card-bg);
+  border:1px solid var(--border);
+  border-radius:14px;
+  overflow:hidden;
+  transition:transform .25s ease,box-shadow .25s ease,border-color .25s ease;
+  cursor:pointer;
+}
+.card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:3px;
+  opacity:0;transition:opacity .25s ease;z-index:3;
+}
+.card:hover{
+  transform:translateY(-6px);
+  border-color:rgba(255,255,255,.08);
+}
+.card:hover::before{opacity:1}
+.card:active{transform:translateY(-2px)}
+
+/* ── Card preview area ── */
+.card-preview{
+  position:relative;
+  height:160px;
+  display:flex;align-items:center;justify-content:center;
+  overflow:hidden;
+  background:var(--surface);
+}
+.preview-bg{
+  position:absolute;inset:0;
+  opacity:.06;
+  background:radial-gradient(circle at 50% 50%, currentColor, transparent 70%);
+}
+/* Animated element per game */
+.preview-el{
+  position:relative;z-index:2;
+  font-size:42px;
+  filter:drop-shadow(0 0 20px currentColor);
+  animation:float 3s ease-in-out infinite;
+}
+@keyframes float{
+  0%,100%{transform:translateY(0)}
+  50%{transform:translateY(-6px)}
+}
+
+/* Preview animations per game */
+.card-star-castle .preview-el{
+  animation:spin-ring 4s linear infinite;
+  font-size:36px;
+}
+@keyframes spin-ring{
+  0%{transform:rotate(0deg)}
+  100%{transform:rotate(360deg)}
+}
+
+.card-hopper .preview-el{animation:hop 1.2s ease-in-out infinite}
+@keyframes hop{
+  0%,100%{transform:translateY(0)}
+  25%{transform:translateY(-10px)}
+  50%{transform:translateY(-4px)}
+  75%{transform:translateY(-12px)}
+}
+
+.card-zaxxon .preview-el{animation:tilt 2s ease-in-out infinite}
+@keyframes tilt{
+  0%,100%{transform:skewX(-4deg)}
+  50%{transform:skewX(4deg)}
+}
+
+.card-project-2084 .preview-el{animation:pulse-red 1.5s ease-in-out infinite}
+@keyframes pulse-red{
+  0%,100%{transform:scale(1);opacity:.7}
+  50%{transform:scale(1.15);opacity:1}
+}
+
+.card-moon-patrol .preview-el{animation:bounce-side 2.5s ease-in-out infinite}
+@keyframes bounce-side{
+  0%,100%{transform:translateX(0)}
+  25%{transform:translateX(-10px)}
+  75%{transform:translateX(10px)}
+}
+
+.card-slopwith .preview-el{animation:bank 2.8s ease-in-out infinite}
+@keyframes bank{
+  0%,100%{transform:rotate(-5deg)}
+  50%{transform:rotate(5deg)}
+}
+
+.card-bikini .preview-el{animation:gold-pulse 2s ease-in-out infinite}
+@keyframes gold-pulse{
+  0%,100%{transform:scale(1)}
+  50%{transform:scale(1.08)}
+}
+
+.card-flappy .preview-el{animation:flap 1s ease-in-out infinite}
+@keyframes flap{
+  0%,100%{transform:rotate(-8deg) scaleX(-1)}
+  50%{transform:rotate(8deg) scaleX(-1)}
+}
+
+.card-tower .preview-el{animation:glow-pulse 2.5s ease-in-out infinite}
+@keyframes glow-pulse{
+  0%,100%{filter:drop-shadow(0 0 5px currentColor)}
+  50%{filter:drop-shadow(0 0 25px currentColor)}
+}
+
+/* Preview label */
+.preview-label{
+  position:absolute;bottom:10px;left:10px;
+  font-size:10px;letter-spacing:1px;text-transform:uppercase;
+  opacity:.5;z-index:2;
+}
+
+/* ── Card body ── */
+.card-body{padding:16px 18px 18px}
+.card-body h2{
+  font-size:15px;
+  margin-bottom:6px;
+  letter-spacing:1px;
+}
+.card-body p{
+  font-size:13px;
+  color:var(--text-muted);
+  line-height:1.5;
+  margin-bottom:12px;
+}
+/* Tags */
+.card-tags{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px}
+.card-tags span{
+  padding:2px 8px;
+  border-radius:6px;
+  font-size:10px;
+  letter-spacing:.5px;
+  background:rgba(255,255,255,.04);
+  border:1px solid rgba(255,255,255,.06);
+  color:var(--text-muted);
+  text-transform:uppercase;
+}
+/* Actions */
+.card-actions{display:flex;gap:8px}
+.btn-live,.btn-gh{
+  flex:1;padding:8px 0;
+  border-radius:8px;
+  text-align:center;
+  font-size:12px;
+  font-family:inherit;
+  letter-spacing:1px;
+  text-decoration:none;
+  transition:all .2s ease;
+  cursor:pointer;
+}
+.btn-live{
+  background:rgba(255,255,255,.06);
+  color:var(--text);
+  border:1px solid rgba(255,255,255,.08);
+}
+.btn-live:hover{background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.15)}
+.btn-gh{
+  background:transparent;
+  color:var(--text-muted);
+  border:1px solid var(--border);
+}
+.btn-gh:hover{color:var(--text);border-color:rgba(255,255,255,.1)}
+
+/* Per-card accent strip colours */
+.card-star-castle::before{background:var(--c-star-castle)}
+.card-hopper::before{background:var(--c-hopper)}
+.card-zaxxon::before{background:var(--c-zaxxon)}
+.card-project-2084::before{background:var(--c-project-2084)}
+.card-moon-patrol::before{background:var(--c-moon-patrol)}
+.card-slopwith::before{background:var(--c-slopwith)}
+.card-bikini::before{background:var(--c-bikini)}
+.card-flappy::before{background:var(--c-flappy)}
+.card-tower::before{background:var(--c-tower)}
+
+.card-star-castle .preview-bg{color:var(--c-star-castle)}
+.card-hopper .preview-bg{color:var(--c-hopper)}
+.card-zaxxon .preview-bg{color:var(--c-zaxxon)}
+.card-project-2084 .preview-bg{color:var(--c-project-2084)}
+.card-moon-patrol .preview-bg{color:var(--c-moon-patrol)}
+.card-slopwith .preview-bg{color:var(--c-slopwith)}
+.card-bikini .preview-bg{color:var(--c-bikini)}
+.card-flappy .preview-bg{color:var(--c-flappy)}
+.card-tower .preview-bg{color:var(--c-tower)}
+
+.card-star-castle .preview-label{color:var(--c-star-castle)}
+.card-hopper .preview-label{color:var(--c-hopper)}
+.card-zaxxon .preview-label{color:var(--c-zaxxon)}
+.card-project-2084 .preview-label{color:var(--c-project-2084)}
+.card-moon-patrol .preview-label{color:var(--c-moon-patrol)}
+.card-slopwith .preview-label{color:var(--c-slopwith)}
+.card-bikini .preview-label{color:var(--c-bikini)}
+.card-flappy .preview-label{color:var(--c-flappy)}
+.card-tower .preview-label{color:var(--c-tower)}
+
+/* ── Footer ── */
+.footer{
+  position:relative;z-index:2;
+  text-align:center;padding:0 20px 40px;
+  font-size:12px;color:var(--text-muted);
+}
+.footer a{color:var(--c-star-castle);text-decoration:none}
+.footer a:hover{text-decoration:underline}
+
+/* ── Responsive card preview ── */
+@media(max-width:640px){
+  .card-preview{height:120px}
+  .preview-el{font-size:32px}
+}
+</style>
+</head>
+<body>
+
+<canvas id="stars-canvas"></canvas>
+
+<header class="hero">
+  <h1>✦ Game <span>Arcade</span></h1>
+  <p class="subtitle">Canvas Game Homages &amp; Originals</p>
+  <div class="count">🎮 <span>9</span> games — all single-file, zero-dependency</div>
+</header>
+
+<div class="meta-bar">
+  <span class="tag active">Arcade Homage</span>
+  <span class="tag">Canvas 2D</span>
+  <span class="tag">Web Audio</span>
+  <span class="tag">Touch Ready</span>
+  <span class="tag">MIT License</span>
+</div>
+
+<div class="grid">
+  <!-- 1. Star Castle -->
+  <div class="card card-star-castle">
+    <div class="card-preview">
+      <div class="preview-bg"></div>
+      <div class="preview-el">🛸</div>
+      <div class="preview-label">Vector · 1980</div>
+    </div>
+    <div class="card-body">
+      <h2>Star Castle</h2>
+      <p>Faithful HTML5 reproduction of the 1980 vector-graphics classic. Three rotating shield rings, tracking projectiles, one ship against the fortress.</p>
+      <div class="card-tags"><span>Canvas</span><span>Vector</span><span>Arcade</span></div>
+      <div class="card-actions">
+        <a class="btn-live" href="https://nwfella.github.io/star-castle-arcade/" target="_blank" rel="noopener">🚀 Play</a>
+        <a class="btn-gh" href="https://github.com/nwfella/star-castle-arcade" target="_blank" rel="noopener">⟨⟩ Repo</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. Hopper at Large -->
+  <div class="card card-hopper">
+    <div class="card-preview">
+      <div class="preview-bg"></div>
+      <div class="preview-el">🐸</div>
+      <div class="preview-label">Arcade · 1981</div>
+    </div>
+    <div class="card-body">
+      <h2>Hopper at Large</h2>
+      <p>Faithful Frogger homage — dodge traffic, hop logs, cross the river. Touch controls for mobile. Pure canvas, zero dependencies.</p>
+      <div class="card-tags"><span>Canvas</span><span>Frogger</span><span>Mobile</span></div>
+      <div class="card-actions">
+        <a class="btn-live" href="https://nwfella.github.io/hopper-at-large/" target="_blank" rel="noopener">🚀 Play</a>
+        <a class="btn-gh" href="https://github.com/nwfella/hopper-at-large" target="_blank" rel="noopener">⟨⟩ Repo</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. Zaxxon Prime -->
+  <div class="card card-zaxxon">
+    <div class="card-preview">
+      <div class="preview-bg"></div>
+      <div class="preview-el">🚀</div>
+      <div class="preview-label">Isometric · 1982</div>
+    </div>
+    <div class="card-body">
+      <h2>Zaxxon Prime</h2>
+      <p>Isometric corridor shooter homage to Sega's 1982 classic. Altitude-based navigation, perspective grid, touch joystick controls.</p>
+      <div class="card-tags"><span>Isometric</span><span>Shooter</span><span>Touch</span></div>
+      <div class="card-actions">
+        <a class="btn-live" href="https://nwfella.github.io/zaxxon-prime/" target="_blank" rel="noopener">🚀 Play</a>
+        <a class="btn-gh" href="https://github.com/nwfella/zaxxon-prime" target="_blank" rel="noopener">⟨⟩ Repo</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. Project 2084 -->
+  <div class="card card-project-2084">
+    <div class="card-preview">
+      <div class="preview-bg"></div>
+      <div class="preview-el">👾</div>
+      <div class="preview-label">Twin-Stick · 1982</div>
+    </div>
+    <div class="card-body">
+      <h2>Project 2084</h2>
+      <p>Robotron: 2084 twin-stick arena shooter. Independent 8-way movement &amp; firing, 11 enemy types, Gamepad API support.</p>
+      <div class="card-tags"><span>Twin-Stick</span><span>Canvas</span><span>Gamepad</span></div>
+      <div class="card-actions">
+        <a class="btn-live" href="https://nwfella.github.io/project-2084/" target="_blank" rel="noopener">🚀 Play</a>
+        <a class="btn-gh" href="https://github.com/nwfella/project-2084" target="_blank" rel="noopener">⟨⟩ Repo</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- 5. Moon Patrol -->
+  <div class="card card-moon-patrol">
+    <div class="card-preview">
+      <div class="preview-bg"></div>
+      <div class="preview-el">🌙</div>
+      <div class="preview-label">Scrolling · 1982</div>
+    </div>
+    <div class="card-body">
+      <h2>Moon Patrol</h2>
+      <p>Faithful clone of Irem's 1982 lunar rover arcade game. Procedural terrain, jump &amp; shoot, mobile controls. Pure canvas.</p>
+      <div class="card-tags"><span>Scroller</span><span>Platform</span><span>Mobile</span></div>
+      <div class="card-actions">
+        <a class="btn-live" href="https://nwfella.github.io/moon-patrol/" target="_blank" rel="noopener">🚀 Play</a>
+        <a class="btn-gh" href="https://github.com/nwfella/moon-patrol" target="_blank" rel="noopener">⟨⟩ Repo</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- 6. Sopwith Camel -->
+  <div class="card card-slopwith">
+    <div class="card-preview">
+      <div class="preview-bg"></div>
+      <div class="preview-el">✈️</div>
+      <div class="preview-label">Dogfight · 1984</div>
+    </div>
+    <div class="card-body">
+      <h2>Sopwith Camel</h2>
+      <p>Enhanced tribute to the 1984 classic — biplane dogfighting, bombing runs, procedural terrain, and synthesized audio. Zero dependencies.</p>
+      <div class="card-tags"><span>Canvas</span><span>Audio</span><span>Dogfight</span></div>
+      <div class="card-actions">
+        <a class="btn-live" href="https://nwfella.github.io/slopwith-camel/" target="_blank" rel="noopener">🚀 Play</a>
+        <a class="btn-gh" href="https://github.com/nwfella/slopwith-camel" target="_blank" rel="noopener">⟨⟩ Repo</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- 7. Bikini Bottom Breakout -->
+  <div class="card card-bikini">
+    <div class="card-preview">
+      <div class="preview-bg"></div>
+      <div class="preview-el">🧽</div>
+      <div class="preview-label">Breakout · SpongeBob</div>
+    </div>
+    <div class="card-body">
+      <h2>Bikini Bottom Breakout</h2>
+      <p>SpongeBob-themed Breakout — Jellyfish Fields meets The Krusty Krab. Gold borders, jellyfish bricks, custom character paddle.</p>
+      <div class="card-tags"><span>Canvas</span><span>Breakout</span><span>Themed</span></div>
+      <div class="card-actions">
+        <a class="btn-live" href="https://nwfella.github.io/bikini-bottom-breakout/" target="_blank" rel="noopener">🚀 Play</a>
+        <a class="btn-gh" href="https://github.com/nwfella/bikini-bottom-breakout" target="_blank" rel="noopener">⟨⟩ Repo</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- 8. Flappy Bob -->
+  <div class="card card-flappy">
+    <div class="card-preview">
+      <div class="preview-bg"></div>
+      <div class="preview-el">🐦</div>
+      <div class="preview-label">Flappy Bird · SpongeBob</div>
+    </div>
+    <div class="card-body">
+      <h2>Flappy Bob</h2>
+      <p>SpongeBob SquarePants Flappy Bird clone. Hand-drawn canvas character with pores, shirt &amp; tie. Coral pipe obstacles, Bikini Bottom vibes.</p>
+      <div class="card-tags"><span>Canvas</span><span>Flappy</span><span>Themed</span></div>
+      <div class="card-actions">
+        <a class="btn-live" href="https://nwfella.github.io/flappy-bob/" target="_blank" rel="noopener">🚀 Play</a>
+        <a class="btn-gh" href="https://github.com/nwfella/flappy-bob" target="_blank" rel="noopener">⟨⟩ Repo</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- 9. Retro Tower Defense -->
+  <div class="card card-tower">
+    <div class="card-preview">
+      <div class="preview-bg"></div>
+      <div class="preview-el">🏰</div>
+      <div class="preview-label">Strategy · Fantasy</div>
+    </div>
+    <div class="card-body">
+      <h2>Retro Tower Defense</h2>
+      <p>Grid-based fantasy TD with warrior, archer, mage towers. Wave-based enemy spawns, strategic placement, parchment aesthetic.</p>
+      <div class="card-tags"><span>Canvas</span><span>Tower Defense</span><span>Grid</span></div>
+      <div class="card-actions">
+        <a class="btn-live" href="https://nwfella.github.io/retro-tower-defense/" target="_blank" rel="noopener">🚀 Play</a>
+        <a class="btn-gh" href="https://github.com/nwfella/retro-tower-defense" target="_blank" rel="noopener">⟨⟩ Repo</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer class="footer">
+  <a href="https://github.com/nwfella/game-arcade-showcase">⟨⟩ game-arcade-showcase</a> · Built with vanilla HTML/CSS/JS · 2026
+</footer>
+
+<script>
+// ── Animated starfield ──
+const canvas = document.getElementById('stars-canvas');
+const ctx = canvas.getContext('2d');
+let stars = [];
+let W, H;
+
+function resize() {
+  W = canvas.width = window.innerWidth;
+  H = canvas.height = window.innerHeight;
+}
+window.addEventListener('resize', resize);
+resize();
+
+for (let i = 0; i < 120; i++) {
+  stars.push({
+    x: Math.random() * W,
+    y: Math.random() * H,
+    r: Math.random() * 1.5 + 0.3,
+    a: Math.random() * 0.8 + 0.2,
+    s: Math.random() * 0.008 + 0.002
+  });
+}
+
+function drawStars() {
+  ctx.clearRect(0, 0, W, H);
+  for (const s of stars) {
+    ctx.beginPath();
+    ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(255,255,255,${s.a * (0.6 + 0.4 * Math.sin(performance.now() * s.s))})`;
+    ctx.fill();
+  }
+}
+
+function animate() {
+  drawStars();
+  requestAnimationFrame(animate);
+}
+animate();
+</script>
+
+</body>
+</html>
