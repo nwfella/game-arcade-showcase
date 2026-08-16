@@ -27,6 +27,7 @@
   --c-bikini: #ffd700;
   --c-flappy: #ffeb3b;
   --c-tower: #cd853f;
+  --c-memory: #0e6fae;
 }
 
 html{font-size:16px}
@@ -226,6 +227,12 @@ body::after{
   50%{filter:drop-shadow(0 0 25px currentColor)}
 }
 
+.card-memory .preview-el{animation:cardflip 2.2s ease-in-out infinite}
+@keyframes cardflip{
+  0%,100%{transform:rotateY(0deg)}
+  50%{transform:rotateY(180deg)}
+}
+
 /* Preview label */
 .preview-label{
   position:absolute;bottom:10px;left:10px;
@@ -294,6 +301,7 @@ body::after{
 .card-bikini::before{background:var(--c-bikini)}
 .card-flappy::before{background:var(--c-flappy)}
 .card-tower::before{background:var(--c-tower)}
+.card-memory::before{background:var(--c-memory)}
 
 .card-star-castle .preview-bg{color:var(--c-star-castle)}
 .card-hopper .preview-bg{color:var(--c-hopper)}
@@ -304,6 +312,7 @@ body::after{
 .card-bikini .preview-bg{color:var(--c-bikini)}
 .card-flappy .preview-bg{color:var(--c-flappy)}
 .card-tower .preview-bg{color:var(--c-tower)}
+.card-memory .preview-bg{color:var(--c-memory)}
 
 .card-star-castle .preview-label{color:var(--c-star-castle)}
 .card-hopper .preview-label{color:var(--c-hopper)}
@@ -314,6 +323,7 @@ body::after{
 .card-bikini .preview-label{color:var(--c-bikini)}
 .card-flappy .preview-label{color:var(--c-flappy)}
 .card-tower .preview-label{color:var(--c-tower)}
+.card-memory .preview-label{color:var(--c-memory)}
 
 /* ── Footer ── */
 .footer{
@@ -494,7 +504,25 @@ body::after{
     </div>
   </div>
 
-  <!-- 9. Retro Tower Defense -->
+  <!-- 9. SpongeBob Memory Madness -->
+  <div class="card card-memory">
+    <div class="card-preview">
+      <div class="preview-bg"></div>
+      <div class="preview-el">🃏</div>
+      <div class="preview-label">Memory · SpongeBob</div>
+    </div>
+    <div class="card-body">
+      <h2>SpongeBob Memory Madness</h2>
+      <p>Bikini Bottom memory match — 16 hand-drawn characters, 3 difficulties, star ratings. CSS 3D card flips, bubble-burst matches, fully synthesized audio.</p>
+      <div class="card-tags"><span>Canvas</span><span>Memory</span><span>Themed</span></div>
+      <div class="card-actions">
+        <a class="btn-live" href="https://nwfella.github.io/spongebob-memory-game/" target="_blank" rel="noopener">🚀 Play</a>
+        <a class="btn-gh" href="https://github.com/nwfella/spongebob-memory-game" target="_blank" rel="noopener">⟨⟩ Repo</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- 10. Retro Tower Defense -->
   <div class="card card-tower">
     <div class="card-preview">
       <div class="preview-bg"></div>
