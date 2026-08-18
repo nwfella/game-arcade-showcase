@@ -28,6 +28,7 @@
   --c-flappy: #ffeb3b;
   --c-tower: #cd853f;
   --c-memory: #0e6fae;
+  --c-middleearth: #e8b64c;
 }
 
 html{font-size:16px}
@@ -325,6 +326,15 @@ body::after{
 .card-tower .preview-label{color:var(--c-tower)}
 .card-memory .preview-label{color:var(--c-memory)}
 
+.card-middleearth .preview-el{animation:ring-float 2.4s ease-in-out infinite}
+@keyframes ring-float{
+  0%,100%{transform:translateY(0) rotate(-8deg)}
+  50%{transform:translateY(-6px) rotate(8deg)}
+}
+.card-middleearth::before{background:var(--c-middleearth)}
+.card-middleearth .preview-bg{color:var(--c-middleearth)}
+.card-middleearth .preview-label{color:var(--c-middleearth)}
+
 /* ── Footer ── */
 .footer{
   position:relative;z-index:2;
@@ -348,7 +358,7 @@ body::after{
 <header class="hero">
   <h1>✦ Game <span>Arcade</span></h1>
   <p class="subtitle">Canvas Game Homages &amp; Originals</p>
-  <div class="count">🎮 <span>9</span> games — all single-file, zero-dependency</div>
+  <div class="count">🎮 <span>11</span> games — all single-file, zero-dependency</div>
 </header>
 
 <div class="meta-bar">
@@ -536,6 +546,24 @@ body::after{
       <div class="card-actions">
         <a class="btn-live" href="https://nwfella.github.io/retro-tower-defense/" target="_blank" rel="noopener">🚀 Play</a>
         <a class="btn-gh" href="https://github.com/nwfella/retro-tower-defense" target="_blank" rel="noopener">⟨⟩ Repo</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- 10. How Good's Your Memory, Puss? -->
+  <div class="card card-middleearth">
+    <div class="card-preview">
+      <div class="preview-bg"></div>
+      <div class="preview-el">💍</div>
+      <div class="preview-label">Memory · Middle-earth</div>
+    </div>
+    <div class="card-body">
+      <h2>How Good's Your Memory, Puss?</h2>
+      <p>Middle-earth creature memory match. 16 real public-domain masterworks (Rackham, Doré, Bauer, Redon, Audubon) embedded as data URIs. Eye of Sauron card backs, synthesized Elvish chimes.</p>
+      <div class="card-tags"><span>Memory</span><span>Single-file</span><span>PD Art</span></div>
+      <div class="card-actions">
+        <a class="btn-live" href="https://nwfella.github.io/how-goods-your-memory-puss/" target="_blank" rel="noopener">🚀 Play</a>
+        <a class="btn-gh" href="https://github.com/nwfella/how-goods-your-memory-puss" target="_blank" rel="noopener">⟨⟩ Repo</a>
       </div>
     </div>
   </div>
