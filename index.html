@@ -29,6 +29,7 @@
   --c-tower: #cd853f;
   --c-memory: #0e6fae;
   --c-middleearth: #e8b64c;
+  --c-mines: #e8c07a;
 }
 
 html{font-size:16px}
@@ -335,6 +336,17 @@ body::after{
 .card-middleearth .preview-bg{color:var(--c-middleearth)}
 .card-middleearth .preview-label{color:var(--c-middleearth)}
 
+/* SpongeBob Minesweeper — sand accent, patty bob */
+.card-mines .preview-el{animation:patty-bob 2.6s ease-in-out infinite}
+@keyframes patty-bob{
+  0%,100%{transform:translateY(0) scale(1)}
+  45%{transform:translateY(-7px) scale(1.06)}
+  70%{transform:translateY(-2px) scale(.98)}
+}
+.card-mines::before{background:var(--c-mines)}
+.card-mines .preview-bg{color:var(--c-mines)}
+.card-mines .preview-label{color:var(--c-mines)}
+
 /* ── Footer ── */
 .footer{
   position:relative;z-index:2;
@@ -358,7 +370,7 @@ body::after{
 <header class="hero">
   <h1>✦ Game <span>Arcade</span></h1>
   <p class="subtitle">Canvas Game Homages &amp; Originals</p>
-  <div class="count">🎮 <span>11</span> games — all single-file, zero-dependency</div>
+  <div class="count">🎮 <span>12</span> games — all single-file, zero-dependency</div>
 </header>
 
 <div class="meta-bar">
@@ -564,6 +576,24 @@ body::after{
       <div class="card-actions">
         <a class="btn-live" href="https://nwfella.github.io/how-goods-your-memory-puss/" target="_blank" rel="noopener">🚀 Play</a>
         <a class="btn-gh" href="https://github.com/nwfella/how-goods-your-memory-puss" target="_blank" rel="noopener">⟨⟩ Repo</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- 12. SpongeBob Minesweeper -->
+  <div class="card card-mines">
+    <div class="card-preview">
+      <div class="preview-bg"></div>
+      <div class="preview-el">🍔</div>
+      <div class="preview-label">Logic · Bikini Bottom</div>
+    </div>
+    <div class="card-body">
+      <h2>Bikini Bottom Mines</h2>
+      <p>Real Minesweeper rules in Bikini Bottom — first click always safe, chording, flag cycle, 3 difficulties. Plankton are the mines, Krabby Patties are the flags, and SpongeBob's face is the new-game button. 179 logic + 63 browser checks.</p>
+      <div class="card-tags"><span>Canvas</span><span>Puzzle</span><span>Themed</span></div>
+      <div class="card-actions">
+        <a class="btn-live" href="https://nwfella.github.io/spongebob-minesweeper/" target="_blank" rel="noopener">🚀 Play</a>
+        <a class="btn-gh" href="https://github.com/nwfella/spongebob-minesweeper" target="_blank" rel="noopener">⟨⟩ Repo</a>
       </div>
     </div>
   </div>
